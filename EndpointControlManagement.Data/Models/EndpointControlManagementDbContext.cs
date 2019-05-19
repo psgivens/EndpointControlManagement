@@ -43,8 +43,8 @@ namespace EndpointControlManagement.Data.Models {
         }
 
 
-        public virtual DbSet<EndpointEventEnvelopeEntity> UserEvents { get; set; }
+        public virtual DbSet<EndpointEventEnvelopeEntity> EndpointEvents { get; set; }
 
-        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Endpoint> Endpoints { get; set; }
     }
 }

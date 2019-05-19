@@ -11,7 +11,7 @@ open Suave.RequestErrors
 open Common.FSharp.Suave
 
 open EndpointControlManagement.Api.ProcessingSystem
-open EndpointControlManagement.Api.UserCommands
+open EndpointControlManagement.Api.EndpointCommands
 open EndpointControlManagement.Api.RestQuery
 
 let app =
@@ -21,14 +21,14 @@ let app =
           // All requests are handled together because CQRS
           GET >=> choose
             [ pathCi "/" >=> OK "Default route"
-              pathCi "/users" >=> (getUsers |> Suave.Http.context) 
-              pathScanCi "/users/%s" getUser
+              pathCi "/endpoints" >=> (getEndpoints |> Suave.Http.context) 
+              pathScanCi "/endpoints/%s" getEndpoint
             ]            
 
-          // User commands
-          POST >=> pathCi "/users" >=> restful postUser
-          PUT >=> pathScanCi "/users/%s" (restfulPathScan putUser)
-          DELETE >=> pathScanCi "/users/%s" deleteUser
+          // Endpoint commands
+          POST >=> pathCi "/endpoints" >=> restful postEndpoint
+          PUT >=> pathScanCi "/endpoints/%s" (restfulPathScan putEndpoint)
+          DELETE >=> pathScanCi "/endpoints/%s" deleteEndpoint
 
           // Role commands
           BAD_REQUEST "Request path was not found"

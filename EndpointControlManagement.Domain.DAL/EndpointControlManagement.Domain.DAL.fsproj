@@ -8,7 +8,7 @@
     <ProjectReference Include="..\..\Common.FSharp\Common.FSharp\Common.FSharp.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src/UserManagement.fs" />
+    <Compile Include="src/EndpointChange.fs" />
     <Compile Include="src/EventSourcing.fs" />
     <Compile Include="src/Database.fs" />
   </ItemGroup>

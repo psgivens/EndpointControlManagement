@@ -7,7 +7,7 @@ open Akka.FSharp
 open EndpointControlManagement.Domain
 open Common.FSharp.Envelopes
 open EndpointControlManagement.Domain.DomainTypes
-open EndpointControlManagement.Domain.UserManagement
+open EndpointControlManagement.Domain.EndpointChange
 open EndpointControlManagement.Domain
 open Common.FSharp.Actors
 
@@ -22,21 +22,21 @@ open Suave
 open Common.FSharp.Suave
 
 type ActorGroups = {
-    UserManagementActors:ActorIO<UserManagementCommand>
+    EndpointChangeActors:ActorIO<EndpointChangeCommand>
     }
 
 let composeActors system =
     // Create member management actors
-    let userManagementActors = 
+    let endpointChangeActors = 
         EventSourcingActors.spawn 
             (system,
-             "userManagement", 
-             UserManagementEventStore (),
-             buildState UserManagement.evolve,
-             UserManagement.handle,
-             DAL.UserManagement.persist)    
+             "EndpointChange", 
+             EndpointChangeEventStore (),
+             buildState EndpointChange.evolve,
+             EndpointChange.handle,
+             DAL.EndpointChange.persist)    
              
-    { UserManagementActors=userManagementActors }
+    { EndpointChangeActors=endpointChangeActors }
 
 
 let initialize () = 
@@ -53,9 +53,9 @@ let initialize () =
     printfn "Composing the actors..."
     let actorGroups = composeActors system
 
-    let userCommandRequestReplyCanceled = 
-      RequestReplyActor.spawnRequestReplyActor<UserManagementCommand, UserManagementEvent> 
-        system "user_management_command" actorGroups.UserManagementActors
+    let endpointCommandRequestReplyCanceled = 
+      RequestReplyActor.spawnRequestReplyActor<EndpointChangeCommand, EndpointChangeEvent> 
+        system "endpoint_management_command" actorGroups.EndpointChangeActors
 
     let runWaitAndIgnore = 
       Async.AwaitTask
@@ -65,19 +65,19 @@ let initialize () =
     let userId = UserId.create ()
     let envelop streamId = envelopWithDefaults userId (TransId.create ()) streamId
 
-    printfn "Creating user..."
+    printfn "Creating endpoint..."
     { 
-        FirstName="Phillip"
-        LastName="Givens"
-        Email="one@three.com"
+      EndpointDetails.Url = "/sample/url"
+      EndpointDetails.Method = EndpointMethod.GET
+      EndpointDetails.Name = "sample url"
     }
-    |> UserManagementCommand.Create
+    |> EndpointChangeCommand.Create
     |> envelop (StreamId.create ())
-    |> userCommandRequestReplyCanceled.Ask
+    |> endpointCommandRequestReplyCanceled.Ask
     |> runWaitAndIgnore
 
-    let user = EndpointControlManagement.Domain.DAL.UserManagement.findUserByEmail "one@three.com"
-    printfn "Created User %s with userId %A" user.Email user.Id         
+    let endpoint = EndpointControlManagement.Domain.DAL.EndpointChange.findEndpointByName "sample url"
+    printfn "Created Endpoint %s with endpointId %A" endpoint.Name endpoint.Id         
 
     actorGroups
 

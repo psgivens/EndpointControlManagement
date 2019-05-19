@@ -38,6 +38,7 @@ namespace EndpointControlManagement.Data.Models
     {
         [Key]
         public System.Guid Id { get; set; }
+        public string Name { get; set; }
         public string Url { get; set; }
         public string Method { get; set; }
         public IList<DataConstraint> Constraints { get; set; } = new List<DataConstraint>();

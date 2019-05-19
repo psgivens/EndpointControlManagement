@@ -14,7 +14,7 @@
     <Compile Include="src/Dtos.fs" />
     <Compile Include="src/ProcessingSystem.fs" />
     <Compile Include="src/RestQuery.fs" />
-    <Compile Include="src/UserCommands.fs" />
+    <Compile Include="src/EndpointCommands.fs" />
     <Compile Include="src/Program.fs" />
   </ItemGroup>
   <ItemGroup>

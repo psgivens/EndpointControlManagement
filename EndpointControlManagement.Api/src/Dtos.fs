@@ -2,14 +2,14 @@ module EndpointControlManagement.Api.Dtos
 
 open EndpointControlManagement.Data.Models
 
-type UserDto = { 
+type EndpointDto = { 
     id : string
-    first_name : string 
-    last_name : string
-    email : string }
+    name : string 
+    url : string
+    method : string }
 
-let convertToDto (user:User) = { 
-  UserDto.email = user.Email
-  first_name = user.FirstName
-  last_name = user.LastName
-  id = user.Id.ToString () }
+let convertToDto (endpoint:Endpoint) = { 
+  EndpointDto.name = endpoint.Name
+  url = endpoint.Url
+  method = endpoint.Method
+  id = endpoint.Id.ToString () }

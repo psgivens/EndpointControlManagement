@@ -25,20 +25,20 @@ type EndpointControlManagementDbContext with
                 Item = (JsonConvert.DeserializeObject<'a> event.Event)
             })
 
-open EndpointControlManagement.Domain.UserManagement
-type UserManagementEventStore () =
-    interface IEventStore<UserManagementEvent> with
+open EndpointControlManagement.Domain.EndpointChange
+type EndpointChangeEventStore () =
+    interface IEventStore<EndpointChangeEvent> with
         member this.GetEvents (streamId:StreamId) =
             use context = new  EndpointControlManagementDbContext ()
             streamId
-            |> context.GetAggregateEvents (fun i -> i.UserEvents) 
+            |> context.GetAggregateEvents (fun i -> i.EndpointEvents) 
             |> Seq.toList 
             |> List.sortBy(fun x -> x.Version)
-        member this.AppendEvent (envelope:Envelope<UserManagementEvent>) =
+        member this.AppendEvent (envelope:Envelope<EndpointChangeEvent>) =
             try
                 use context = new EndpointControlManagementDbContext ()
-                context.UserEvents.Add (
-                    UserEventEnvelopeEntity (  Id = envelope.Id,
+                context.EndpointEvents.Add (
+                    EndpointEventEnvelopeEntity (  Id = envelope.Id,
                                             StreamId = StreamId.unbox envelope.StreamId,
                                             UserId = UserId.unbox envelope.UserId,
                                             TransactionId = TransId.unbox envelope.TransactionId,
@@ -49,6 +49,7 @@ type UserManagementEventStore () =
                 context.SaveChanges () |> ignore
                 
             with
+                // TODO: Replace the debugger break with an exception
                 | ex -> System.Diagnostics.Debugger.Break () 
 
 

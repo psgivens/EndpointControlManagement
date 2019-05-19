@@ -8,14 +8,14 @@ open Suave.Successful
 open Common.FSharp.Suave
 open EndpointControlManagement.Domain
 
-let getUser userIdString =
-  DAL.UserManagement.findUserByEmail userIdString
+let getEndpoint endpointName =
+  DAL.EndpointChange.findEndpointByName endpointName
   |> convertToDto
   |> toJson 
   |> OK
 
-let getUsers (ctx:HttpContext) =
-  DAL.UserManagement.getAllUsers ()
+let getEndpoints (ctx:HttpContext) =
+  DAL.EndpointChange.getAllEndpoints ()
   |> List.map convertToDto
   |> toJson
   |> OK
