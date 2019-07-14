@@ -20,16 +20,26 @@ type EndpointDetails = {
     Method: EndpointMethod
 }
 
-type EndpointChangeState = { State: EndpointActiveState; Endpoint: EndpointDetails }
+type EndpointDataConstraint = { Pattern:string }
+
+type EndpointChangeState = { 
+    State: EndpointActiveState; 
+    Endpoint: EndpointDetails 
+    DataConstraints: EndpointDataConstraint list
+    }
 
 type EndpointChangeCommand =
     | Create of EndpointDetails
     | Update of EndpointDetails
+    | AddConstraint of EndpointDataConstraint
+    | RemoveConstraint of EndpointDataConstraint
     | Archive
 
 type EndpointChangeEvent = 
     | Created of EndpointDetails
     | Updated of EndpointDetails
+    | ConstraintAdded of EndpointDataConstraint
+    | ConstraintRemoved of EndpointDataConstraint
     | Archived
 
 let private (|IsArchived|_|) state =
@@ -45,16 +55,23 @@ let handle (command:CommandHandlers<EndpointChangeEvent, Version>) (state:Endpoi
     | Some _, Create _ -> failwith "Cannot create a Endpoint which already exists"
     | IsArchived _, cmd -> failwith <| sprintf "Cannot perform action %A on archived Endpoint" cmd
     | Some _, Update details -> Updated details |> command.event
+    | Some _, AddConstraint c -> ConstraintAdded c |> command.event
+    | Some _, RemoveConstraint c -> ConstraintRemoved c |> command.event
     | Some _, Archive -> Archived |> command.event
 
+let remove item l =
+    let notMatch i = i <> item
+    l |> List.filter notMatch 
 
 let evolve (state:EndpointChangeState option) (event:EndpointChangeEvent) =
     match state, event with 
-    | None, Created details -> { State=Active; Endpoint=details}
+    | None, Created details -> { State=Active; Endpoint=details; DataConstraints=[] }
     | None, Updated _ -> failwith "Cannot update a Endpoint which does not exist"
     | None, Archived -> failwith "Cannot archive a Endpoint which does not exist"
     | Some _, Created _ -> failwith "Cannot create a Endpoint which already exists"
     | IsArchived _, _ -> failwith <| sprintf "Cannot perform action %A on archived Endpoint" event
     | Some state', Updated details -> { state' with Endpoint=details }
+    | Some state', ConstraintAdded c -> { state' with DataConstraints = c::state'.DataConstraints }
+    | Some state', ConstraintRemoved c -> { state' with DataConstraints = state'.DataConstraints |> remove c }
     | Some state', Archived -> { state' with State=EndpointActiveState.Archived }
 

@@ -8,5 +8,7 @@
   <ItemGroup>
     <Compile Include="src/DomainTypes.fs" />
     <Compile Include="src/EndpointChange.fs" />
+    <Compile Include="src/PrivilegeChange.fs" />
+    <Compile Include="src/RoleChange.fs" />
   </ItemGroup>
 </Project>

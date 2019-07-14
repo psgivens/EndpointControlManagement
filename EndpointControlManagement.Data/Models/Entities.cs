@@ -4,20 +4,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EndpointControlManagement.Data.Models
 {
-    public class User
-    {
-        [Key]
-        public System.Guid Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-    }
-
     public class Role
     {
         [Key]
         public System.Guid Id { get; set; }
         public string Name { get; set; }
+        public IList<RolePrivilegeMapping> PrivilegeMaps {get;set;} = new List<RolePrivilegeMapping>();
     }
 
     public class Privilege
@@ -25,10 +17,14 @@ namespace EndpointControlManagement.Data.Models
         [Key]
         public System.Guid Id { get; set; }
         public string Name { get; set; }
+        public IList<RolePrivilegeMapping> RoleMaps {get;set;} = new List<RolePrivilegeMapping>();
+        public IList<PrivilegeEndpointMapping> EndpointMaps {get;set;} = new List<PrivilegeEndpointMapping>();
     }
 
     public class DataConstraint
     {
+        [Key]
+        public System.Guid Id { get; set; }
         // TODO: Figure out what data constraints look like.
         // I may have some documentation somewhere about this. 
         public string Pattern { get; set; }
@@ -42,6 +38,8 @@ namespace EndpointControlManagement.Data.Models
         public string Url { get; set; }
         public string Method { get; set; }
         public IList<DataConstraint> Constraints { get; set; } = new List<DataConstraint>();
+        public IList<PrivilegeEndpointMapping> PrivilegeMaps {get;set;} = new List<PrivilegeEndpointMapping>();
+
     }
 
     public class RolePrivilegeMapping
